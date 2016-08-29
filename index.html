@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>Redux</title>
 
 		<link rel="stylesheet" href="css/reveal.css">
 		<link rel="stylesheet" href="css/theme/black.css">
@@ -24,8 +24,141 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section id="start">
+					<h2>No react, No redux</h2>
+					<p>so, let's talk about react in a short word.</p>
+				</section>
+
+				<section id="react-01">
+					<img border="0" alt="react-logo" src="https://upload.wikimedia.org/wikipedia/commons/5/57/React.js_logo.svg">
+				</section>
+
+				<section id="react-02" class="present" style="top: 0px; display: block;">
+					<h2>What is React ?</h2>
+					<p class="fragment fade-up visible current-fragment" data-fragment-index="0">
+						respond or behave in a particular way in response to something.
+						<a href="http://translate.google.cn/#en/zh-CN/react" target="_blank">translate from google</a>
+					</p>
+					<p class="fragment fade-up" data-fragment-index="1">以**特定**的方式对**某些东西**作出**回应或行为**。</p>
+					<h2 class="fragment fade-up" data-fragment-index="2">What is React ?</h2>
+					<p class="fragment fade-up" data-fragment-index="3"><a href="https://facebook.github.io/react/index.html" target="_blank">A Javascript Library</a></p>
+					<p class="fragment fade-up" data-fragment-index="4">组件化</p>
+					<p class="fragment fade-up" data-fragment-index="5">虚拟 DOM</p>
+					<p class="fragment fade-up" data-fragment-index="6">状态机(数据改变状态，状态改变虚拟DOM)</p>
+					<p class="fragment fade-up" data-fragment-index="7">单向数据流</p>
+				</section>
+
+				<section id="react-03">
+					<h2>瑕疵</h2>
+					<p>各个分散的组件的状态变得难以控制</p>
+					<p class="fragment fade-up" data-fragment-index="0">终极版解决方案--<a href="http://translate.google.cn/#en/zh-CN/redux" target="_blank">redux</a></p>
+				</section>
+
+				<section id="redux-01">
+						<img width="600" alt="REDUX" src="https://raw.githubusercontent.com/reactjs/redux/master/logo/logo.png">
+				</section>
+
+				<section id="redux-02" data-markdown>
+					## What is Redux ?
+					
+					* [Redux is a predictable state container for JavaScript apps.](https://github.com/reactjs/redux)
+					* 一个可预测的状态容器
+					* 应用于react时，是react的数据总管，一个终极版解决方案
+				</section>
+
+				<section id="redux-03" data-markdown>
+					## there principles of redux
+
+					* The Single Immutable State Tree (单一的不可变的状态树)
+					* Describing State Changes with Actions (用actions来描述状态的改变)
+					* The Reducer Function return the new state (reducer函数产生新的状态)
+				</section>
+
+				<section id="redux-04" data-markdown>
+					## Implementing createStore from Scratch
+					
+					```
+					const createStore = (reducer) => {
+					  let state;
+					  let listeners = [];
+
+					  const getState = () => state;
+
+					  const dispatch = (action) => {
+					    state = reducer(state, action);
+					    listeners.forEach(listener => listener());
+					  };
+
+					  const subscribe = (listener) => {
+					    listeners.push(listener);
+					    return () => {
+					      listeners = listeners.filter(l => l !== listener);
+					    }
+					  };
+
+					  dispatch({}); // dummy dispatch
+
+					  return { getState, dispatch, subscribe };
+
+					};
+					```
+				</section>
+
+				<section id="redux-05" data-markdown>
+					## Implementing combineReducers from Scratch
+					
+					```
+					const combineReducers = reducers => {
+					  return (state = {}, action) => {
+
+					    // Reduce all the keys for reducers from `todos` and `visibilityFilter`
+					    return Object.keys(reducers).reduce(
+					      (nextState, key) => {
+					        // Call the corresponding reducer function for a given key
+					        nextState[key] = reducers[key] (
+					          state[key],
+					          action
+					        );
+					        return nextState;
+					      },
+					      {} // The `reduce` on our keys gradually fills this empty object until it is returned.
+					    );
+					  };
+					};
+					```
+				</section>
+
+				<section id="redux-06" data-markdown>
+					## Implementing Provider from scratch
+					
+					```
+					class Provider extends Component {
+					  getChildContext() {
+					    return {
+					      store: this.props.store // This corresponds to the `store` passed in as a prop
+					    };
+					  }
+					  render() {
+					    return this.props.children;
+					  }
+					}
+
+					Provider.childContextTypes = {
+					  store: React.PropTypes.object
+					}
+					```
+				</section>
+
+				<section id="redux-07" data-markdown>
+					##magic connect
+					
+					* connect state and dispatch to container component as explicitly props.
+					* everytime dispatch happend, re-called mapStateToProps; if the bind state changed, re-render the container component.
+				</section>
+
+				<section id="end" data-markdown>
+					## Thanks
+				</section>
 			</div>
 		</div>
 
@@ -35,7 +168,12 @@
 		<script>
 			// More info https://github.com/hakimel/reveal.js#configuration
 			Reveal.initialize({
+				controls: true,
+				progress: true,
 				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
 
 				// More info https://github.com/hakimel/reveal.js#dependencies
 				dependencies: [
